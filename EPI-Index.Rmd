@@ -1,0 +1,121 @@
+---
+title: "Visualization check in"
+author: "Hanif Wicaksono"
+date: "9/19/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+library(tidyverse)
+library(readxl)
+library(janitor)
+```
+
+```{r message=FALSE, echo=FALSE}
+epi_index <-
+  read_xlsx(path = "dataset/2018-epi.xlsx", sheet = "2018EPI_ScoresCurrent") %>%
+clean_names()
+
+#Current EPI Index by region
+epi_index %>% 
+  group_by(region) %>%
+  arrange(desc(epi_current)) %>%
+  ggplot(aes(x = iso, y = epi_current, color = region)) + 
+  geom_point() + 
+  facet_grid(~ region) + 
+  theme(axis.text.x = element_blank()) +
+  geom_text(aes(label=country), size=2, nudge_y = -1) +
+  labs(title = "Current total EPI Index by Region", 
+       subtitle = "Year 2018", 
+       x = "Country",
+       y = "EPI score")
+```
+
+
+```{r message=FALSE, echo =FALSE}
+#Current APE Index by region
+epi_index %>% 
+  group_by(region) %>%
+  arrange(desc(epi_current)) %>%
+  ggplot(aes(x = iso, y = ape_current, color = region)) + 
+  geom_point() + 
+  facet_grid(~ region) + 
+  theme(axis.text.x = element_blank()) +
+  geom_text(aes(label=country), size=4, nudge_y = -1) +
+  labs(title = "Current Air Quality Index by Region", 
+       subtitle = "Year 2018", 
+       x = "Country",
+       y = "APE score")
+```
+
+```{r message=FALSE, echo =FALSE}
+country_snapshot <-
+  read_xlsx(path = "dataset/2018-epi.xlsx", sheet = "2018EPI_CountrySnapshot") %>%
+clean_names()
+
+#Current EPI Index by region
+country_snapshot %>% 
+  group_by(region) %>%
+  arrange(desc(epi2018rank)) %>%
+  ggplot(aes(x = iso, y = land_area, color = region)) + 
+  geom_col() + 
+  facet_grid(~ region) +
+  theme(axis.text.x = element_blank()) +
+  geom_text(aes(label=country), size=2) +
+  scale_y_log10() +
+  labs(title = "Countries by Population & Land Area", 
+       subtitle = "Grouped by Region", 
+       x = "Land Area")
+```
+
+
+```{r message=FALSE, echo =FALSE}
+
+tcc_defo_fire <-
+  read_xlsx(path = "dataset/sdei-global-fire-emissions-indicators-country-level-1997-2015-gfed4-total-carbon-content-area-burned.xlsx", sheet = "TCC - DEFO fires") %>%
+  clean_names()
+
+tcc_defo_top <-
+  tcc_defo_fire %>%
+  arrange(desc(average)) %>%
+  head(10)
+  
+  ggplot(tcc_defo_top, aes(x = country, y = average)) + 
+  geom_col(width = 0.25) +
+  theme(axis.text.x = element_blank()) +
+  theme_minimal() +
+  labs(title = "Average Tropical Deforestation Fires", 
+       subtitle = "1997 - 2015",
+       x = "Countries",
+       y = "Total Carbon Content")
+```
+
+```{r}
+tcc_defo_top %>%
+  select(country, average) %>%
+  head(10)
+```
+
+
+```{r}
+tcc_peat_fire <-
+  read_xlsx(path = "dataset/sdei-global-fire-emissions-indicators-country-level-1997-2015-gfed4-total-carbon-content-area-burned.xlsx", sheet = "TCC - PEAT Fires") %>%
+  clean_names()
+
+tcc_peat_top <-
+  tcc_peat_fire %>%
+  arrange(desc(average)) %>%
+  head(10)
+  
+  ggplot(tcc_peat_top, aes(x = country, y = average)) + 
+  geom_col(width = 0.25) +
+  theme(axis.text.x = element_blank()) +
+  theme_minimal() +
+  labs(title = "Average Peat Fires", 
+       subtitle = "1997 - 2015",
+       x = "Countries",
+       y = "Total Carbon Content")
+```
+
+
